@@ -122,3 +122,47 @@ class WeatherDatabase:
 
             session.commit()  # write the row to identifier.sqlite
             return record.id
+
+    # =====================================================================
+    # Part C6: query the table and display the stored data
+    # =====================================================================
+    def query_record(self, latitude, longitude, month, day, year):
+        """
+        Query the weather_data table for a location and date.
+
+        :return: the matching WeatherRecord, or None if nothing was stored
+        """
+        # expire_on_commit=False keeps the values readable after the session closes.
+        with Session(self.engine, expire_on_commit=False) as session:
+            return self._find(session, latitude, longitude, month, day, year)
+
+    @staticmethod
+    def display_record(record, location_name=""):
+        """Print a stored WeatherRecord as a formatted report."""
+        if record is None:
+            print("No record found for that location and date.")
+            return
+
+        line = "=" * 60
+        print(line)
+        print("  FIVE-YEAR HISTORICAL WEATHER REPORT (from SQLite)")
+        print(line)
+        if location_name:
+            print(f"  Location        : {location_name}")
+        print(f"  Record ID       : {record.id}")
+        print(f"  Latitude        : {record.latitude}")
+        print(f"  Longitude       : {record.longitude}")
+        print(f"  Event date      : {record.month:02d}/{record.day:02d}/{record.year}")
+        print(f"  Years covered   : {record.year - 5} - {record.year - 1}")
+        print("-" * 60)
+        print(f"  {'Measure':<26}{'Average/Sum':>12}{'Min':>10}{'Max':>10}")
+        print("-" * 60)
+        print(f"  {'Mean temperature (F)':<26}{record.avg_temperature:>12.2f}"
+              f"{record.min_temperature:>10.2f}{record.max_temperature:>10.2f}")
+        print(f"  {'Max wind speed (mph)':<26}{record.avg_wind_speed:>12.2f}"
+              f"{record.min_wind_speed:>10.2f}{record.max_wind_speed:>10.2f}")
+        print(f"  {'Precipitation (in) [sum]':<26}{record.sum_precipitation:>12.2f}"
+              f"{record.min_precipitation:>10.2f}{record.max_precipitation:>10.2f}")
+        print(line)
+        print(f"  Report generated: {datetime.now():%Y-%m-%d %I:%M:%S %p}")
+        print(line)

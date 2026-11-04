@@ -51,6 +51,12 @@ def main():
     record_id = db.populate(weather)
     print(f"Saved to identifier.sqlite (record id {record_id}).\n")
 
+    # =====================================================================
+    # Part C6: query the table and display the stored data
+    # =====================================================================
+    record = db.query_record(LATITUDE, LONGITUDE, EVENT_MONTH, EVENT_DAY, EVENT_YEAR)
+    db.display_record(record, LOCATION_NAME)
+
 
 if __name__ == "__main__":
     main()
