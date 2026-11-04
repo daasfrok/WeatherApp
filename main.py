@@ -11,6 +11,7 @@ Run with:  python main.py
 """
 
 from weather_data import WeatherData
+from database import WeatherDatabase
 
 # -------------------------------------------------------------------------
 # Event settings: change these to use a different location or date.
@@ -42,6 +43,13 @@ def main():
     for yr, t, w, p in zip(years, temps, winds, precip):
         print(f"{yr:<8}{t:>15.2f}{w:>16.2f}{p:>13.2f}")
     print()
+
+    # =====================================================================
+    # Part C5: populate the SQLite table with the weather data
+    # =====================================================================
+    db = WeatherDatabase(DATABASE_URL)
+    record_id = db.populate(weather)
+    print(f"Saved to identifier.sqlite (record id {record_id}).\n")
 
 
 if __name__ == "__main__":

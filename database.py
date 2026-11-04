@@ -84,3 +84,41 @@ class WeatherDatabase:
             WeatherRecord.year == year,
         )
         return session.scalars(statement).first()
+
+    # =====================================================================
+    # Part C5: populate the table with the weather data
+    # =====================================================================
+    def populate(self, weather):
+        """
+        Save a WeatherData object to the table. If a row already exists for
+        the same location and date it is updated, so running the program
+        again does not create duplicates.
+
+        :param weather: a WeatherData object whose methods have been called
+        :return: the primary key (id) of the saved row
+        """
+        with Session(self.engine) as session:
+            record = self._find(session, weather.latitude, weather.longitude,
+                                weather.month, weather.day, weather.year)
+            if record is None:
+                record = WeatherRecord()
+                session.add(record)
+
+            # Copy each instance variable from the WeatherData object.
+            record.latitude = weather.latitude
+            record.longitude = weather.longitude
+            record.month = weather.month
+            record.day = weather.day
+            record.year = weather.year
+            record.avg_temperature = weather.avg_temperature
+            record.min_temperature = weather.min_temperature
+            record.max_temperature = weather.max_temperature
+            record.avg_wind_speed = weather.avg_wind_speed
+            record.min_wind_speed = weather.min_wind_speed
+            record.max_wind_speed = weather.max_wind_speed
+            record.sum_precipitation = weather.sum_precipitation
+            record.min_precipitation = weather.min_precipitation
+            record.max_precipitation = weather.max_precipitation
+
+            session.commit()  # write the row to identifier.sqlite
+            return record.id
